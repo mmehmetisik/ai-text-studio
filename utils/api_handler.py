@@ -1,76 +1,76 @@
 """
-Groq API ile iletişim kuran fonksiyonlar
-Bu dosya API çağrılarını yönetir ve hata kontrolü yapar
+Functions for communicating with Groq API
+This file manages API calls and error handling
 """
 
 import os
-import requests  # HTTP istekleri için
+import requests  # For HTTP requests
 from dotenv import load_dotenv
 
-# .env dosyasından çevre değişkenlerini yükle
+# Load environment variables from .env file
 load_dotenv()
 
-# Groq API bilgileri
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # .env dosyasından API key'i al
+# Groq API information
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # Get API key from .env file
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"  # Groq API endpoint
 
 
 def generate_text(prompt, content_type, tone, length):
     """
-    Groq API kullanarak metin üretir
+    Generates text using Groq API
 
     Args:
-        prompt (str): Kullanıcının yazdığı konu veya talimat
-        content_type (str): Metin türü açıklaması
-        tone (str): Ton açıklaması
-        length (tuple): Minimum ve maksimum kelime sayısı
+        prompt (str): Topic or instruction written by user
+        content_type (str): Content type description
+        tone (str): Tone description
+        length (tuple): Minimum and maximum word count
 
     Returns:
-        str: Üretilen metin veya hata mesajı
+        str: Generated text or error message
     """
 
     try:
-        # System prompt oluştur (AI'a rolünü söylüyoruz)
-        system_prompt = f"""Sen profesyonel bir içerik yazarısın. 
-        Görevin {content_type} türünde içerik üretmektir.
-        Ton: {tone}
-        Uzunluk: {length[0]}-{length[1]} kelime arası olmalı."""
+        # Create system prompt (telling AI its role)
+        system_prompt = f"""You are a professional content writer. 
+        Your task is to create {content_type} type content.
+        Tone: {tone}
+        Length: Must be between {length[0]}-{length[1]} words."""
 
-        # API isteği için gerekli başlıklar
-        # Authorization başlığı API key'i gönderiyor
-        # Bearer kelimesi token tipini belirtiyor
+        # Required headers for API request
+        # Authorization header sends the API key
+        # Bearer keyword specifies token type
         headers = {
             "Authorization": f"Bearer {GROQ_API_KEY}",
             "Content-Type": "application/json"
         }
 
-        # API'ye göndereceğimiz veri
-        # model: Groq'da kullanılabilir modellerden biri
-        # llama-3.1-8b-instant hızlı ve hafif bir model
+        # Data to send to API
+        # model: One of the available models in Groq
+        # llama-3.1-8b-instant is a fast and lightweight model
         data = {
-            "model": "llama-3.1-8b-instant",  # Groq'un en iyi genel amaçlı modeli
+            "model": "llama-3.1-8b-instant",  # Groq's best general-purpose model
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ],
-            "temperature": 0.7,  # Yaratıcılık seviyesi (0-2 arası, 0.7 dengeli)
-            "max_tokens": 2000  # Maksimum üretilecek token sayısı
+            "temperature": 0.7,  # Creativity level (0-2 range, 0.7 is balanced)
+            "max_tokens": 2000  # Maximum number of tokens to generate
         }
 
-        # API'ye POST isteği gönder
-        # timeout parametresi 30 saniye bekle, sonra timeout ver demek
+        # Send POST request to API
+        # timeout parameter means wait 30 seconds, then timeout
         response = requests.post(GROQ_API_URL, headers=headers, json=data, timeout=30)
 
-        # Yanıtı kontrol et
-        # 200 status code başarılı demek
+        # Check response
+        # 200 status code means success
         if response.status_code == 200:
-            result = response.json()  # JSON formatındaki yanıtı parse et
-            generated_text = result["choices"][0]["message"]["content"]  # Üretilen metni al
+            result = response.json()  # Parse JSON response
+            generated_text = result["choices"][0]["message"]["content"]  # Get generated text
             return generated_text
         else:
-            # Eğer hata varsa, hata kodunu ve mesajını döndür
-            return f"API Hatası: {response.status_code} - {response.text}"
+            # If there's an error, return error code and message
+            return f"API Error: {response.status_code} - {response.text}"
 
     except Exception as e:
-        # Eğer bir exception oluşursa (internet kesildi, timeout oldu vb.)
-        return f"Hata oluştu: {str(e)}"
+        # If an exception occurs (internet disconnected, timeout, etc.)
+        return f"Error occurred: {str(e)}"

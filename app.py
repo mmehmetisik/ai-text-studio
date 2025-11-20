@@ -1,337 +1,333 @@
 """
-AI Metin Üretim Stüdyosu
-Groq API kullanarak farklı türlerde metin içerikleri üretir
+AI Text Generation Studio
+Generates different types of text content using Groq API
 """
 
-import streamlit as st  # Streamlit kütüphanesini içe aktar
-from utils.api_handler import generate_text  # Metin üretim fonksiyonunu içe aktar
-from config.settings import CONTENT_TYPES, TONE_OPTIONS, LENGTH_OPTIONS  # Ayarları içe aktar
-from utils.text_processor import count_words  # Kelime sayma fonksiyonunu içe aktar
+import streamlit as st  # Import Streamlit library
+from utils.api_handler import generate_text  # Import text generation function
+from config.settings import CONTENT_TYPES, TONE_OPTIONS, LENGTH_OPTIONS  # Import settings
+from utils.text_processor import count_words  # Import word counting function
 
-from utils.text_processor import count_words  # Kelime sayma fonksiyonunu içe aktar
 
 def load_css():
-    """CSS dosyasını yükler ve Streamlit'e uygular"""
+    """Loads CSS file and applies it to Streamlit"""
     with open("assets/style.css") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
-# Session state başlat - uygulama ilk açıldığında çalışır
-# session_state'te history adında bir liste yoksa oluştur
-# Bu liste tüm üretilen metinleri saklayacak
+# Initialize session state - runs when app first opens
+# If there's no list named history in session_state, create one
+# This list will store all generated texts
 if 'history' not in st.session_state:
-    st.session_state.history = []  # Boş liste ile başla
+    st.session_state.history = []  # Start with empty list
 
-# Sayfa yapılandırması - bu her zaman en üstte olmalı
+# Page configuration - this should always be at the top
 st.set_page_config(
-    page_title="AI Metin Üretim Stüdyosu",  # Tarayıcı sekmesinde görünen başlık
-    page_icon="✍️",  # Sekme ikonu
-    layout="wide"  # Sayfa genişliği geniş olsun
+    page_title="AI Text Generation Studio",  # Title shown in browser tab
+    page_icon="✍️",  # Tab icon
+    layout="wide"  # Page width should be wide
 )
 
-# CSS dosyasını yükle
+# Load CSS file
 load_css()
 
-# Ana başlık - büyük ve kalın görünür
-st.title("✍️ AI Metin Üretim Stüdyosu")
+# Main title - appears large and bold
+st.title("✍️ AI Text Generation Studio")
 
-# Ana başlık - büyük ve kalın görünür
-st.title("✍️ AI Metin Üretim Stüdyosu")
+# Subtitle - for description
+st.markdown("Create professional text content using Groq AI")
 
-# Alt başlık - açıklama için
-st.markdown("Groq AI kullanarak profesyonel metin içerikleri oluşturun")
-
-# Yatay çizgi - görsel ayrım için
+# Horizontal line - for visual separation
 st.divider()
 
-# Kullanıcıdan konu girişi al
-# text_area çok satırlı metin kutusu oluşturur
+# Get topic input from user
+# text_area creates multi-line text box
 user_prompt = st.text_area(
-    label="Hangi konuda metin üretmek istiyorsunuz?",
-    placeholder="Örnek: Yapay zeka hakkında bir blog yazısı yaz...",
+    label="What topic would you like to generate text about?",
+    placeholder="Example: Write a blog post about artificial intelligence...",
     height=100
 )
 
-# Selectbox açılır menü oluşturur
-# Kullanıcı metin türünü seçer
+# Selectbox creates dropdown menu
+# User selects text type
 content_type = st.selectbox(
-    label="Metin Türü Seçin",
-    options=list(CONTENT_TYPES.keys())  # Dictionary'deki anahtarları liste yap
+    label="Select Content Type",
+    options=list(CONTENT_TYPES.keys())  # Convert dictionary keys to list
 )
 
-# Seçilen türün açıklamasını göster
+# Show description of selected type
 st.info(f"📝 {CONTENT_TYPES[content_type]}")
 
-# Radio butonlar ile ton seçimi
-# horizontal=True ile butonlar yatay dizilir
+# Tone selection with radio buttons
+# horizontal=True arranges buttons horizontally
 tone = st.radio(
-    label="Ton Seçin",
+    label="Select Tone",
     options=list(TONE_OPTIONS.keys()),
     horizontal=True
 )
 
-# Seçilen tonun açıklamasını göster
+# Show description of selected tone
 st.caption(f"💬 {TONE_OPTIONS[tone]}")
 
-# Select slider ile uzunluk seçimi
+# Length selection with select slider
 length_choice = st.select_slider(
-    label="Metin Uzunluğu",
+    label="Text Length",
     options=list(LENGTH_OPTIONS.keys())
 )
 
-# Seçilen uzunluğun kelime aralığını göster
-min_words, max_words = LENGTH_OPTIONS[length_choice]  # Tuple'dan değerleri al
-st.caption(f"📏 Yaklaşık {min_words}-{max_words} kelime")
+# Show word range of selected length
+min_words, max_words = LENGTH_OPTIONS[length_choice]  # Get values from tuple
+st.caption(f"📏 Approximately {min_words}-{max_words} words")
 
-# Kaç tane versiyon üretilsin?
-# number_input sayı girişi için kullanılır
-# min_value ve max_value minimum ve maksimum değerleri belirler
-# value varsayılan değerdir
+# How many versions to generate?
+# number_input is used for number entry
+# min_value and max_value set minimum and maximum values
+# value is the default value
 num_versions = st.number_input(
-    label="Kaç farklı versiyon üretilsin?",
+    label="How many different versions to generate?",
     min_value=1,
     max_value=3,
     value=1,
-    help="Aynı konuda farklı varyasyonlar görmek için artırın"
+    help="Increase to see different variations on the same topic"
 )
 
-# Boşluk ekle
+# Add spacing
 st.write("")
 
-# Buton oluştur
-# primary type butonu mavi renkli ve vurgulu yapar
+# Create button
+# primary type makes button blue and highlighted
 generate_button = st.button(
-    label="🚀 Metin Üret",
+    label="🚀 Generate Text",
     type="primary",
-    use_container_width=True  # Buton sayfanın genişliğinde olsun
+    use_container_width=True  # Button should span page width
 )
 
-# Butona tıklandığında ne olacağını kontrol et
+# Control what happens when button is clicked
 if generate_button:
-    # Kullanıcı metin girmiş mi kontrol et
+    # Check if user entered text
     if not user_prompt:
-        st.warning("⚠️ Lütfen bir konu girin!")  # Sarı uyarı mesajı
+        st.warning("⚠️ Please enter a topic!")  # Yellow warning message
     else:
-        # Başarı mesajını göster
-        st.success(f"✅ {num_versions} farklı versiyon üretiliyor...")
+        # Show success message
+        st.success(f"✅ Generating {num_versions} different version(s)...")
 
-        # Eğer birden fazla versiyon isteniyorsa kolonlar oluştur
-        # Kolonlar yan yana kutular oluşturur, her versiyon kendi kolonunda görünür
+        # If multiple versions requested, create columns
+        # Columns create side-by-side boxes, each version appears in its own column
         if num_versions > 1:
-            # columns fonksiyonu kaç kolon istediğimizi belirler
-            # num_versions kadar kolon oluşturur, yani 2 versiyon = 2 kolon
+            # columns function determines how many columns we want
+            # Creates num_versions columns, so 2 versions = 2 columns
             cols = st.columns(num_versions)
 
-        # Her versiyon için döngü başlat
-        # range(num_versions) 0'dan num_versions'a kadar sayılar üretir
-        # Mesela num_versions=3 ise, i değerleri 0, 1, 2 olur
+        # Start loop for each version
+        # range(num_versions) generates numbers from 0 to num_versions
+        # For example if num_versions=3, i values will be 0, 1, 2
         for i in range(num_versions):
-            # Her versiyonu ayrı ayrı üret
-            # Loading göstergesi ile kullanıcıya hangi versiyon üretildiğini göster
-            with st.spinner(f"✨ Versiyon {i + 1} üretiliyor..."):
-                # API'yi çağır ve metin üret
-                # Her döngüde yeni bir API çağrısı yapılır
-                # Temperature aynı olduğu için her versiyon biraz farklı olacak
+            # Generate each version separately
+            # Loading indicator shows user which version is being generated
+            with st.spinner(f"✨ Generating version {i + 1}..."):
+                # Call API and generate text
+                # A new API call is made in each loop
+                # Each version will be slightly different due to temperature
                 generated_text = generate_text(
-                    user_prompt,  # Kullanıcının girdiği konu
-                    CONTENT_TYPES[content_type],  # Seçilen türün açıklaması
-                    TONE_OPTIONS[tone],  # Seçilen tonun açıklaması
-                    LENGTH_OPTIONS[length_choice]  # Seçilen uzunluğun min-max değerleri
+                    user_prompt,  # Topic entered by user
+                    CONTENT_TYPES[content_type],  # Description of selected type
+                    TONE_OPTIONS[tone],  # Description of selected tone
+                    LENGTH_OPTIONS[length_choice]  # Min-max values of selected length
                 )
 
-            # Eğer birden fazla versiyon varsa, her versiyonu kendi kolonunda göster
-            # Tek versiyon varsa normal akışta göster
+            # If multiple versions, show each version in its own column
+            # If single version, show in normal flow
             if num_versions > 1:
-                # cols[i] i'inci kolonu seçer
-                # with bloğu içindeki her şey o kolonda görünür
+                # cols[i] selects the i-th column
+                # Everything inside with block appears in that column
                 with cols[i]:
-                    # Üretilen metni geçmişe ekle
-                    # Her metni bir dictionary olarak kaydediyoruz ki hangi ayarlarla üretildiğini bilelim
+                    # Add generated text to history
+                    # Save each text as dictionary so we know what settings were used
                     st.session_state.history.append({
-                        'prompt': user_prompt,  # Kullanıcının yazdığı konu
-                        'content_type': content_type,  # Metin türü
-                        'tone': tone,  # Ton
-                        'length': length_choice,  # Uzunluk
-                        'text': generated_text,  # Üretilen metin
-                        'version': i + 1  # Hangi versiyon
+                        'prompt': user_prompt,  # Topic written by user
+                        'content_type': content_type,  # Text type
+                        'tone': tone,  # Tone
+                        'length': length_choice,  # Length
+                        'text': generated_text,  # Generated text
+                        'version': i + 1  # Which version
                     })
 
-                    # Versiyon başlığı, hangi versiyon olduğunu gösterir
-                    st.markdown(f"#### 📄 Versiyon {i + 1}")
-                    # Üretilen metni göster
+                    # Version heading, shows which version it is
+                    st.markdown(f"#### 📄 Version {i + 1}")
+                    # Show generated text
                     st.write(generated_text)
 
-                    # Kelime sayısını hesapla ve göster
+                    # Calculate and show word count
                     word_count = count_words(generated_text)
                     st.metric(
-                        label="📊 Kelime Sayısı",
-                        value=f"{word_count} kelime",
-                        delta=f"Hedef: {min_words}-{max_words}"
+                        label="📊 Word Count",
+                        value=f"{word_count} words",
+                        delta=f"Target: {min_words}-{max_words}"
                     )
 
-                    # Her versiyon için ayrı indirme butonu
-                    # Dosya adına versiyon numarası eklenir ki karışmasın
+                    # Separate download button for each version
+                    # Version number added to filename to avoid confusion
                     st.download_button(
-                        label="💾 İndir",
+                        label="💾 Download",
                         data=generated_text,
                         file_name=f"{content_type.replace(' ', '_')}_v{i + 1}.txt",
                         mime="text/plain",
                         use_container_width=True
                     )
             else:
-                # Tek versiyon için geçmişe ekle
+                # Add to history for single version
                 st.session_state.history.append({
                     'prompt': user_prompt,
                     'content_type': content_type,
                     'tone': tone,
                     'length': length_choice,
                     'text': generated_text,
-                    'version': 1  # Tek versiyon
+                    'version': 1  # Single version
                 })
 
-                # Tek versiyon ise, eski düzende göster
-                st.markdown("### 📝 Üretilen Metin:")
+                # For single version, show in old layout
+                st.markdown("### 📝 Generated Text:")
                 st.write(generated_text)
 
-                # Kelime sayısını hesapla ve göster
+                # Calculate and show word count
                 word_count = count_words(generated_text)
                 st.metric(
-                    label="📊 Kelime Sayısı",
-                    value=f"{word_count} kelime",
-                    delta=f"Hedef: {min_words}-{max_words}"
+                    label="📊 Word Count",
+                    value=f"{word_count} words",
+                    delta=f"Target: {min_words}-{max_words}"
                 )
 
-                # İndirme butonu
+                # Download button
                 st.download_button(
-                    label="💾 Metni İndir (TXT)",
+                    label="💾 Download Text (TXT)",
                     data=generated_text,
-                    file_name=f"{content_type.replace(' ', '_')}_metin.txt",
+                    file_name=f"{content_type.replace(' ', '_')}_text.txt",
                     mime="text/plain",
                     use_container_width=True
                 )
 
 # ============================================================================
-# SIDEBAR - METİN GEÇMİŞİ PANELİ
+# SIDEBAR - TEXT HISTORY PANEL
 # ============================================================================
 
-# Sidebar başlığı ve açıklama
-# sidebar sol tarafta açılan panel oluşturur
-st.sidebar.title("📚 Metin Geçmişi")
-st.sidebar.markdown("Ürettiğiniz tüm metinler burada saklanır")
+# Sidebar title and description
+# sidebar creates panel that opens on left side
+st.sidebar.title("📚 Text History")
+st.sidebar.markdown("All your generated texts are stored here")
 
-# Eğer geçmişte hiç metin yoksa bilgilendirici mesaj göster
-# len fonksiyonu listenin uzunluğunu verir, 0 ise liste boş demektir
+# If there are no texts in history, show informative message
+# len function gives list length, 0 means list is empty
 if len(st.session_state.history) == 0:
-    st.sidebar.info("Henüz metin üretmediniz. Ürettiğiniz metinler burada görünecek.")
+    st.sidebar.info("You haven't generated any texts yet. Generated texts will appear here.")
 else:
-    # Geçmişte kaç metin olduğunu göster
-    # Bu kullanıcıya ne kadar içerik ürettiğini gösterir
-    st.sidebar.success(f"Toplam {len(st.session_state.history)} metin üretildi")
+    # Show how many texts are in history
+    # This shows user how much content they've generated
+    st.sidebar.success(f"Total {len(st.session_state.history)} text(s) generated")
 
-    # Temizle butonu ekle
-    # Bu buton tüm geçmişi silmek için
-    if st.sidebar.button("🗑️ Geçmişi Temizle", use_container_width=True):
-        # Geçmiş listesini boşalt
-        # clear fonksiyonu listenin tüm elemanlarını siler
+    # Add clear button
+    # This button is for clearing all history
+    if st.sidebar.button("🗑️ Clear History", use_container_width=True):
+        # Empty history list
+        # clear function deletes all elements from list
         st.session_state.history.clear()
-        # Sayfayı yenile ki değişiklik hemen görünsün
-        # rerun fonksiyonu sayfayı yeniden yükler
+        # Refresh page so change is immediately visible
+        # rerun function reloads the page
         st.rerun()
 
-    st.sidebar.divider()  # Yatay çizgi ekle, görsel ayrım için
+    st.sidebar.divider()  # Add horizontal line for visual separation
 
-    # Geçmişteki her metin için bir kart oluştur
-    # enumerate fonksiyonu hem index hem de elemanı verir
-    # reversed geçmişi ters çevirir, en son üretilen en üstte görünsün
+    # Create card for each text in history
+    # enumerate function provides both index and element
+    # reversed reverses history so most recently generated appears at top
     for idx, item in enumerate(reversed(st.session_state.history)):
-        # Her metni bir expander içinde göster
-        # expander tıklanabilir, açılır kapanır kutular oluşturur
-        # Başlıkta prompt'un ilk 30 karakterini gösteriyoruz ki kullanıcı ne olduğunu anlasın
+        # Show each text in an expander
+        # expander creates clickable, expandable/collapsible boxes
+        # Show first 30 characters of prompt in title so user knows what it is
         with st.sidebar.expander(
             f"📄 {item['prompt'][:30]}..." if len(item['prompt']) > 30 else f"📄 {item['prompt']}",
-            expanded=False  # Başlangıçta kapalı olsun, kullanıcı tıklayınca açılsın
+            expanded=False  # Initially closed, opens when user clicks
         ):
-            # Metin bilgilerini göster
-            # caption küçük gri metin oluşturur, metadata için ideal
-            st.caption(f"**Tür:** {item['content_type']}")
-            st.caption(f"**Ton:** {item['tone']}")
-            st.caption(f"**Uzunluk:** {item['length']}")
-            st.caption(f"**Versiyon:** {item['version']}")
+            # Show text information
+            # caption creates small gray text, ideal for metadata
+            st.caption(f"**Type:** {item['content_type']}")
+            st.caption(f"**Tone:** {item['tone']}")
+            st.caption(f"**Length:** {item['length']}")
+            st.caption(f"**Version:** {item['version']}")
 
-            # Küçük bir boşluk
+            # Small spacing
             st.write("")
 
-            # Metni göster ama kısaltılmış halde
-            # Uzun metinleri göstermek sidebar'ı çok kaydırır, ilk 150 karakter yeterli
+            # Show text but in truncated form
+            # Showing long texts scrolls sidebar too much, first 150 characters sufficient
             preview = item['text'][:150] + "..." if len(item['text']) > 150 else item['text']
             st.text_area(
-                label="Metin Önizleme",
+                label="Text Preview",
                 value=preview,
                 height=100,
-                disabled=True,  # disabled=True metni düzenlenemez yapar, sadece okuma için
-                key=f"preview_{idx}"  # Her text_area'nın benzersiz bir key'i olmalı
+                disabled=True,  # disabled=True makes text non-editable, read-only
+                key=f"preview_{idx}"  # Each text_area must have unique key
             )
 
-            # Tam metni göster butonu
-            # Kullanıcı tıklayınca ana sayfada tam metin görünecek
-            if st.button(f"👁️ Tam Metni Gör", key=f"view_{idx}", use_container_width=True):
-                # session_state'te selected_text adında bir değişken oluştur
-                # Bu değişken hangi metnin görüntüleneceğini tutar
+            # View full text button
+            # When user clicks, full text will appear on main page
+            if st.button(f"👁️ View Full Text", key=f"view_{idx}", use_container_width=True):
+                # Create variable named selected_text in session_state
+                # This variable holds which text to display
                 st.session_state.selected_text = item
-                st.rerun()  # Sayfayı yenile ki ana sayfada görünsün
+                st.rerun()  # Refresh page so it appears on main page
 
-            # İndirme butonu
-            # Her geçmiş metin için de indirme imkanı sun
+            # Download button
+            # Provide download option for each history text too
             st.download_button(
-                label="💾 İndir",
+                label="💾 Download",
                 data=item['text'],
                 file_name=f"{item['content_type'].replace(' ', '_')}_v{item['version']}.txt",
                 mime="text/plain",
-                key=f"download_{idx}",  # Her butonun benzersiz key'i olmalı
+                key=f"download_{idx}",  # Each button must have unique key
                 use_container_width=True
             )
 
 # ============================================================================
-# SEÇİLEN METNİ ANA SAYFADA GÖSTER
+# SHOW SELECTED TEXT ON MAIN PAGE
 # ============================================================================
 
-# Eğer kullanıcı geçmişten bir metin seçtiyse, onu ana sayfada göster
-# selected_text session_state'te varsa demek ki kullanıcı bir metni görüntülemek istemiş
+# If user selected text from history, show it on main page
+# If selected_text exists in session_state, means user wants to view a text
 if 'selected_text' in st.session_state:
-    # Ana sayfada seçilen metni göster
-    st.divider()  # Görsel ayrım için çizgi
-    st.subheader("📖 Seçilen Metin")
+    # Show selected text on main page
+    st.divider()  # Line for visual separation
+    st.subheader("📖 Selected Text")
 
-    # Metin bilgilerini göster
-    # Üç kolon oluştur, bilgiler yan yana görünsün
+    # Show text information
+    # Create three columns, information appears side by side
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.caption(f"**Tür:** {st.session_state.selected_text['content_type']}")
+        st.caption(f"**Type:** {st.session_state.selected_text['content_type']}")
     with col2:
-        st.caption(f"**Ton:** {st.session_state.selected_text['tone']}")
+        st.caption(f"**Tone:** {st.session_state.selected_text['tone']}")
     with col3:
-        st.caption(f"**Uzunluk:** {st.session_state.selected_text['length']}")
+        st.caption(f"**Length:** {st.session_state.selected_text['length']}")
 
-    # Tam metni göster
+    # Show full text
     st.write(st.session_state.selected_text['text'])
 
-    # Kelime sayısı
+    # Word count
     word_count = count_words(st.session_state.selected_text['text'])
-    st.metric(label="📊 Kelime Sayısı", value=f"{word_count} kelime")
+    st.metric(label="📊 Word Count", value=f"{word_count} words")
 
-    # İndirme butonu
+    # Download button
     st.download_button(
-        label="💾 Bu Metni İndir",
+        label="💾 Download This Text",
         data=st.session_state.selected_text['text'],
         file_name=f"{st.session_state.selected_text['content_type'].replace(' ', '_')}_selected.txt",
         mime="text/plain",
         use_container_width=True
     )
 
-    # Kapat butonu
-    # Kullanıcı metni gördü, kapatmak isteyebilir
-    if st.button("❌ Kapat", type="secondary"):
-        # selected_text değişkenini session_state'ten sil
-        # del komutu bir değişkeni tamamen kaldırır
+    # Close button
+    # User saw text, may want to close it
+    if st.button("❌ Close", type="secondary"):
+        # Delete selected_text variable from session_state
+        # del command completely removes a variable
         del st.session_state.selected_text
-        st.rerun()  # Sayfayı yenile
+        st.rerun()  # Refresh page

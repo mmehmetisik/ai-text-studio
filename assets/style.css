@@ -1,10 +1,10 @@
-/* Ana sayfa arka plan rengi ve genel stil */
+/* Main page background color and general style */
 .stApp {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #ffffff;
 }
 
-/* Başlık stilleri */
+/* Heading styles */
 h1, h2, h3 {
     color: #ffffff !important;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);

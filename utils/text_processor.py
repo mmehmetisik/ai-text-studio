@@ -1,63 +1,63 @@
 """
-Metin işleme ve analiz fonksiyonları
-Bu dosya üretilen metinleri işler ve analiz eder
+Text processing and analysis functions
+This file processes and analyzes generated texts
 """
 
 
 def count_words(text):
     """
-    Metindeki kelime sayısını hesaplar
+    Calculates the number of words in the text
 
     Args:
-        text (str): Kelime sayısı hesaplanacak metin
+        text (str): Text to count words in
 
     Returns:
-        int: Toplam kelime sayısı
+        int: Total word count
     """
-    # Metni boşluklara göre böl ve kelime sayısını say
-    # split() fonksiyonu metni boşluklara göre parçalar
+    # Split text by spaces and count words
+    # split() function splits text by spaces
     words = text.split()
     return len(words)
 
 
 def clean_text(text):
     """
-    Metni temizler ve gereksiz boşlukları kaldırır
+    Cleans text and removes unnecessary spaces
 
     Args:
-        text (str): Temizlenecek metin
+        text (str): Text to be cleaned
 
     Returns:
-        str: Temizlenmiş metin
+        str: Cleaned text
     """
-    # strip() fonksiyonu baştan ve sondan boşlukları kaldırır
-    # replace() fonksiyonu çift boşlukları tek boşluğa çevirir
-    text = text.strip()  # Baştan ve sondan boşluk kaldır
-    text = ' '.join(text.split())  # Çoklu boşlukları tek boşluğa indir
+    # strip() function removes spaces from beginning and end
+    # replace() function converts double spaces to single spaces
+    text = text.strip()  # Remove spaces from beginning and end
+    text = ' '.join(text.split())  # Reduce multiple spaces to single space
     return text
 
 
 def truncate_text(text, max_words):
     """
-    Metni belirtilen kelime sayısına göre kısaltır
+    Truncates text according to specified word count
 
     Args:
-        text (str): Kısaltılacak metin
-        max_words (int): Maksimum kelime sayısı
+        text (str): Text to be truncated
+        max_words (int): Maximum word count
 
     Returns:
-        str: Kısaltılmış metin
+        str: Truncated text
     """
-    # Metni kelimelere ayır
+    # Split text into words
     words = text.split()
 
-    # Eğer metin zaten kısaysa, olduğu gibi döndür
+    # If text is already short, return as is
     if len(words) <= max_words:
         return text
 
-    # İlk max_words kadar kelimeyi al ve birleştir
-    # [:max_words] notasyonu liste dilimlemesi, ilk max_words elemanı alır
+    # Take first max_words words and join them
+    # [:max_words] notation is list slicing, takes first max_words elements
     truncated = ' '.join(words[:max_words])
 
-    # Sonuna üç nokta ekle ki kullanıcı kesildiğini anlasın
+    # Add three dots at the end so user knows it's truncated
     return truncated + "..."

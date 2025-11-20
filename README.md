@@ -1,117 +1,116 @@
-# 🤖 AI Metin Üretim Stüdyosu
+# 🤖 AI Text Generation Studio
 
-Groq API ve Llama 3.1 modeli kullanarak profesyonel metin içerikleri üreten yapay zeka destekli web uygulaması.
+AI-powered web application that generates professional text content using Groq API and Llama 3.1 model.
 
 ![img.png](img.png)
 ![img_1.png](img_1.png)
-![img_2.png](img_2.png)
 
-## 📋 Proje Hakkında
+## 📋 About the Project
 
-AI Metin Üretim Stüdyosu, kullanıcıların farklı türlerde profesyonel metinler üretmesine yardımcı olan bir içerik oluşturma aracıdır. Blog yazılarından ürün açıklamalarına, sosyal medya içeriklerinden e-postalara kadar geniş bir yelpazede metin üretimi yapabilirsiniz.
+AI Text Generation Studio is a content creation tool that helps users generate professional texts in different formats. You can produce text content across a wide range from blog posts to product descriptions, social media content to emails.
 
-## ✨ Özellikler
+## ✨ Features
 
-- **5 Farklı Metin Türü**: Blog yazısı, ürün açıklaması, sosyal medya, e-posta, yaratıcı yazı
-- **5 Farklı Ton Seçeneği**: Profesyonel, samimi, resmi, yaratıcı, bilgilendirici
-- **3 Uzunluk Seçeneği**: Kısa (100-200 kelime), Orta (300-500 kelime), Uzun (600-1000 kelime)
-- **Çoklu Versiyon Üretimi**: Aynı konu için 3'e kadar farklı varyasyon
-- **Metin Geçmişi**: Session içinde tüm üretilen metinleri saklama
-- **TXT İndirme**: Üretilen metinleri doğrudan indirebilme
-- **Kelime Sayısı Analizi**: Gerçek zamanlı kelime sayısı gösterimi
+- **5 Different Content Types**: Blog post, product description, social media, email, creative writing
+- **5 Different Tone Options**: Professional, friendly, formal, creative, informative
+- **3 Length Options**: Short (100-200 words), Medium (300-500 words), Long (600-1000 words)
+- **Multiple Version Generation**: Up to 3 different variations for the same topic
+- **Text History**: Store all generated texts within session
+- **TXT Download**: Download generated texts directly
+- **Word Count Analysis**: Real-time word count display
 
-## 🛠️ Kullanılan Teknolojiler
+## 🛠️ Technologies Used
 
-- **Python 3.12.1**: Programlama dili
-- **Streamlit**: Web arayüzü framework'ü
-- **Groq API**: Hızlı LLM inference
-- **Llama 3.1 70B**: Meta'nın açık kaynak AI modeli
-- **python-dotenv**: Çevre değişkenleri yönetimi
+- **Python 3.12.1**: Programming language
+- **Streamlit**: Web interface framework
+- **Groq API**: Fast LLM inference
+- **Llama 3.1 70B**: Meta's open-source AI model
+- **python-dotenv**: Environment variables management
 
-## 📦 Kurulum
+## 📦 Installation
 
-Projeyi yerel bilgisayarınızda çalıştırmak için:
+To run the project on your local machine:
 
-1. Repoyu klonlayın:
+1. Clone the repository:
 ```bash
 git clone https://github.com/mmehmetisik/ai-text-studio.git
 cd ai-text-studio
 ```
 
-2. Virtual environment oluşturun ve aktifleştirin:
+2. Create and activate virtual environment:
 ```bash
 python -m venv venv
 venv\Scripts\activate  # Windows
 source venv/bin/activate  # Mac/Linux
 ```
 
-3. Gerekli paketleri yükleyin:
+3. Install required packages:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. .env dosyası oluşturun ve Groq API anahtarınızı ekleyin:
+4. Create .env file and add your Groq API key:
 ```
 GROQ_API_KEY=your_api_key_here
 ```
 
-5. Uygulamayı çalıştırın:
+5. Run the application:
 ```bash
 streamlit run app.py
 ```
 
-## 🚀 Kullanım
+## 🚀 Usage
 
-1. Metin konunuzu girin
-2. Metin türünü seçin (Blog, Ürün Açıklaması, vb.)
-3. Ton ve uzunluk ayarlarını yapın
-4. İsterseniz çoklu versiyon sayısını artırın
-5. "Metin Üret" butonuna tıklayın
-6. Üretilen metni indirin veya kopyalayın
+1. Enter your text topic
+2. Select content type (Blog, Product Description, etc.)
+3. Set tone and length preferences
+4. Increase number of versions if desired
+5. Click "Generate Text" button
+6. Download or copy the generated text
 
-## 📁 Proje Yapısı
+## 📁 Project Structure
 ```
 ai-text-studio/
 ├── config/
-│   └── settings.py          # Yapılandırma ayarları
+│   └── settings.py          # Configuration settings
 ├── utils/
-│   ├── api_handler.py       # Groq API entegrasyonu
-│   ├── text_processor.py    # Metin işleme fonksiyonları
-│   └── file_exporter.py     # Dosya kaydetme işlemleri
+│   ├── api_handler.py       # Groq API integration
+│   ├── text_processor.py    # Text processing functions
+│   └── file_exporter.py     # File saving operations
 ├── assets/
-│   └── style.css            # Özel CSS stilleri
-├── app.py                   # Ana Streamlit uygulaması
-├── requirements.txt         # Python bağımlılıkları
-└── .env                     # API anahtarları (git'e eklenmez)
+│   └── style.css            # Custom CSS styles
+├── app.py                   # Main Streamlit application
+├── requirements.txt         # Python dependencies
+└── .env                     # API keys (not added to git)
 ```
 
-## 🔑 API Anahtarı Alma
+## 🔑 Getting API Key
 
-1. [Groq Console](https://console.groq.com) adresine gidin
-2. Ücretsiz hesap oluşturun
-3. API Keys bölümünden yeni anahtar oluşturun
-4. Anahtarı `.env` dosyanıza ekleyin
+1. Go to [Groq Console](https://console.groq.com)
+2. Create a free account
+3. Generate new key from API Keys section
+4. Add the key to your `.env` file
 
-## 🎯 Öğrenme Çıktıları
+## 🎯 Learning Outcomes
 
-Bu proje geliştirilirken şu konular öğrenildi:
+Topics learned while developing this project:
 
-- Groq API kullanımı ve hızlı LLM inference
-- Streamlit ile interaktif web uygulaması geliştirme
-- Session state ile kullanıcı verilerini yönetme
-- Prompt engineering ve AI model parametreleri
-- Git versiyon kontrolü ve GitHub entegrasyonu
-- Modüler kod yapısı ve best practices
+- Using Groq API and fast LLM inference
+- Developing interactive web applications with Streamlit
+- Managing user data with session state
+- Prompt engineering and AI model parameters
+- Git version control and GitHub integration
+- Modular code structure and best practices
 
-## 🤝 Katkıda Bulunma
+## 🤝 Contributing
 
-Pull request'ler memnuniyetle karşılanır. Büyük değişiklikler için lütfen önce bir issue açarak ne değiştirmek istediğinizi tartışın.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## 📝 Lisans
+## 📝 License
 
-Bu proje MIT lisansı altında lisanslanmıştır.
+This project is licensed under the MIT License.
 
-## 👨‍💻 Geliştirici
+## 👨‍💻 Developer
 
 **Mehmet Işık**
 - GitHub: (https://github.com/mmehmetisik)
@@ -119,12 +118,12 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 - Kaggle: (https://www.kaggle.com/mehmetisik)
 - Medium: (https://medium.com/@mmehmetisik)
 
-## 🙏 Teşekkürler
+## 🙏 Acknowledgments
 
-- [Groq](https://groq.com) - Hızlı LLM inference için
-- [Meta](https://ai.meta.com/llama) - Llama 3.1 modeli için
-- [Streamlit](https://streamlit.io) - Harika web framework için
+- [Groq](https://groq.com) - For fast LLM inference
+- [Meta](https://ai.meta.com/llama) - For Llama 3.1 model
+- [Streamlit](https://streamlit.io) - For amazing web framework
 
 ---
 
-⭐ Projeyi beğendiyseniz yıldız vermeyi unutmayın!
+⭐ Don't forget to star the project if you like it!

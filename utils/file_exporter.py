@@ -1,59 +1,59 @@
 """
-Dosya kaydetme ve export işlemleri
-Bu dosya üretilen metinleri TXT formatında kaydeder
+File saving and export operations
+This file saves generated texts in TXT format
 """
 
-from datetime import datetime  # Tarih ve zaman için
+from datetime import datetime  # For date and time
 
 
 def save_as_txt(text, content_type):
     """
-    Metni TXT dosyası olarak kaydeder
+    Saves text as a TXT file
 
     Args:
-        text (str): Kaydedilecek metin
-        content_type (str): İçerik türü (dosya adında kullanılacak)
+        text (str): Text to be saved
+        content_type (str): Content type (will be used in filename)
 
     Returns:
-        str: Kaydedilen dosyanın adı
+        str: Name of the saved file
     """
-    # Şu anki tarih ve saati al, dosya adında kullanmak için
-    # strftime fonksiyonu tarihi istediğimiz formatta string'e çevirir
-    # %Y = yıl, %m = ay, %d = gün, %H = saat, %M = dakika, %S = saniye
+    # Get current date and time to use in filename
+    # strftime function converts date to string in desired format
+    # %Y = year, %m = month, %d = day, %H = hour, %M = minute, %S = second
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # Dosya adını oluştur
-    # Content type'daki boşlukları alt çizgi ile değiştir
-    # replace() fonksiyonu bir karakteri başka bir karakterle değiştirir
+    # Create filename
+    # Replace spaces in content type with underscores
+    # replace() function replaces one character with another
     safe_content_type = content_type.replace(" ", "_")
     filename = f"{safe_content_type}_{timestamp}.txt"
 
-    # Dosyayı yaz
-    # 'w' modu write yani yazma modu demek
-    # encoding='utf-8' Türkçe karakterlerin düzgün görünmesi için önemli
-    # with bloğu dosyayı otomatik olarak kapatır, güvenli bir yöntemdir
+    # Write file
+    # 'w' mode means write mode
+    # encoding='utf-8' is important for proper display of special characters
+    # with block automatically closes the file, it's a safe method
     try:
         with open(filename, 'w', encoding='utf-8') as f:
-            f.write(text)  # Metni dosyaya yaz
-        return filename  # Başarılı olursa dosya adını döndür
+            f.write(text)  # Write text to file
+        return filename  # Return filename if successful
 
     except Exception as e:
-        # Eğer dosya yazarken hata olursa (disk dolu, izin yok vb.)
-        return f"Hata: {str(e)}"
+        # If error occurs while writing file (disk full, no permission, etc.)
+        return f"Error: {str(e)}"
 
 
 def create_download_link(text, filename):
     """
-    Streamlit için indirilebilir dosya verisi oluşturur
+    Creates downloadable file data for Streamlit
 
     Args:
-        text (str): İndirilecek metin
-        filename (str): Dosya adı
+        text (str): Text to be downloaded
+        filename (str): File name
 
     Returns:
-        tuple: (metin verisi, dosya adı, mime tipi)
+        tuple: (text data, file name, mime type)
     """
-    # Bu fonksiyon Streamlit'in download_button'u için veri hazırlar
-    # Metin verisini, dosya adını ve MIME tipini döndürür
-    # MIME tipi tarayıcıya "bu bir text dosyasıdır" der
+    # This function prepares data for Streamlit's download_button
+    # Returns text data, filename, and MIME type
+    # MIME type tells the browser "this is a text file"
     return text, filename, "text/plain"
