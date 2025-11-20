@@ -5,6 +5,9 @@ env/
 # API Keys and Secrets
 .env
 
+# Project documentation (local only)
+*.md
+
 # Python
 __pycache__/
 *.py[cod]
