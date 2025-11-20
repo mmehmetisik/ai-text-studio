@@ -6,7 +6,7 @@ env/
 .env
 
 # Project documentation (local only)
-*.md
+Proje 1 AI Metin Üretim Stüdyosu.md
 
 # Python
 __pycache__/
