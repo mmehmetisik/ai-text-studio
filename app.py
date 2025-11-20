@@ -8,6 +8,14 @@ from utils.api_handler import generate_text  # Metin üretim fonksiyonunu içe a
 from config.settings import CONTENT_TYPES, TONE_OPTIONS, LENGTH_OPTIONS  # Ayarları içe aktar
 from utils.text_processor import count_words  # Kelime sayma fonksiyonunu içe aktar
 
+from utils.text_processor import count_words  # Kelime sayma fonksiyonunu içe aktar
+
+def load_css():
+    """CSS dosyasını yükler ve Streamlit'e uygular"""
+    with open("assets/style.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+
 # Session state başlat - uygulama ilk açıldığında çalışır
 # session_state'te history adında bir liste yoksa oluştur
 # Bu liste tüm üretilen metinleri saklayacak
@@ -20,6 +28,12 @@ st.set_page_config(
     page_icon="✍️",  # Sekme ikonu
     layout="wide"  # Sayfa genişliği geniş olsun
 )
+
+# CSS dosyasını yükle
+load_css()
+
+# Ana başlık - büyük ve kalın görünür
+st.title("✍️ AI Metin Üretim Stüdyosu")
 
 # Ana başlık - büyük ve kalın görünür
 st.title("✍️ AI Metin Üretim Stüdyosu")
